@@ -1,0 +1,53 @@
+package team606.stockStat.communication.parser;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.text.ParseException;
+
+
+import org.springframework.stereotype.Service;
+
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
+
+@Service
+public class CsvYahooParserImpl implements CsvParser{
+
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+	@Override
+    public List<CsvData> parseCsvFile(String filePath, String fromDate, String toDate) throws IOException, ParseException, CsvException {
+        Date fromDateObj = dateFormat.parse(fromDate);
+        Date toDateObj = dateFormat.parse(toDate);
+
+        List<CsvData> dataList = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                CsvData data = new CsvData();
+                UploadInfo uploadInfo = new UploadInfo();
+                uploadInfo.setDate(line[0]);
+                uploadInfo.setSource(line[1]);
+                data.setUploadInfoId(uploadInfo);
+                data.setClose(Double.parseDouble(line[2]));
+                data.setVolume(Integer.parseInt(line[3]));
+                data.setOpen(Double.parseDouble(line[4]));
+                data.setHigh(Double.parseDouble(line[5]));
+                data.setLow(Double.parseDouble(line[6]));
+
+                Date dataDate = dateFormat.parse(uploadInfo.getDate());
+
+                if (dataDate.compareTo(fromDateObj) >= 0 && dataDate.compareTo(toDateObj) <= 0) {
+                    dataList.add(data);
+                }
+            }
+        }
+
+        return dataList;
+    }
+}
