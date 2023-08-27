@@ -25,7 +25,7 @@ public class CommunicetionController {
 	@Autowired
     private CsvParser csvParser;
 	
-	@PostMapping("/parse-csv")
+	@PostMapping("/parser")
     public List<CsvData> parseCsv(@RequestParam MultipartFile file,
                                   @RequestParam String fromDate,
                                   @RequestParam String toDate) throws IOException, CsvException, java.text.ParseException {
