@@ -1,7 +1,7 @@
 package team606.stockStat.communication.parser;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +10,7 @@ import java.text.ParseException;
 
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
@@ -20,13 +21,13 @@ public class CsvYahooParserImpl implements CsvParser{
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
-    public List<CsvData> parseCsvFile(String filePath, String fromDate, String toDate) throws IOException, ParseException, CsvException {
+    public List<CsvData> parseCsvFile(MultipartFile file, String fromDate, String toDate) throws IOException, ParseException, CsvException{
         Date fromDateObj = dateFormat.parse(fromDate);
         Date toDateObj = dateFormat.parse(toDate);
 
         List<CsvData> dataList = new ArrayList<>();
 
-        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             String[] line;
             while ((line = reader.readNext()) != null) {
                 CsvData data = new CsvData();
